@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cookbook", "Cookbook\Cookbook.csproj", "{15654E12-B733-446D-9183-258E42FCF5EE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{15654E12-B733-446D-9183-258E42FCF5EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15654E12-B733-446D-9183-258E42FCF5EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15654E12-B733-446D-9183-258E42FCF5EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15654E12-B733-446D-9183-258E42FCF5EE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

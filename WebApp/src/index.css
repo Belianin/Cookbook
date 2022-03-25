@@ -1,0 +1,31 @@
+body {
+    background: #dbdbdb;
+    font-family: Consolas, monospace;
+}
+
+.paper {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 4px 4px 4px gray;
+}
+
+.content {
+    width: 600px
+}
+
+.centered {
+    display: flex;
+    justify-content: center;
+}
+
+.blockquote {
+    padding-left: 32px;
+    color: dimgray;
+}
+
+.tag {
+    background: seagreen;
+    padding: 8px;
+    margin: 8px;
+}
