@@ -4,39 +4,27 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Cookbook.Common;
 using Newtonsoft.Json;
 
 namespace Cookbook.Recipes.Repositories;
 
 public class JsonFileRecipesRepository : IRecipesRepository
 {
-    private readonly string fullPath;
-    private FileSystemWatcher fileWatcher;
+    private readonly SharedDirectoryWatcher directoryWatcher;
     private Dictionary<Guid, Recipe> recipes;
 
-    public JsonFileRecipesRepository(string directory, string filename)
+    public JsonFileRecipesRepository(SharedDirectoryWatcher directoryWatcher, string filename)
     {
-        directory = directory ?? throw new ArgumentNullException(nameof(directory));
-
-        fullPath = Path.Combine(directory, filename);
-        if (!Directory.Exists(directory))
-            throw new DirectoryNotFoundException(directory);
-        if (!File.Exists(fullPath))
-            throw new FileNotFoundException(filename);
+        this.directoryWatcher = directoryWatcher;
         
-        fileWatcher = new FileSystemWatcher(directory);
-        fileWatcher.Changed += (_, e) =>
-        {
-            if (e.Name == filename)
-                ReadFile();
-        };
+        this.directoryWatcher = directoryWatcher;
+        directoryWatcher.Subscribe(filename, x => recipes = ReadFile(x));
+        recipes = ReadFile(Path.Combine(directoryWatcher.Directory, filename));
     }
     
     public Task<ICollection<Recipe>> GetAllAsync()
     {
-        if (recipes == null)
-            ReadFile();
-
         return Task.FromResult((ICollection<Recipe>) recipes.Values);
     }
 
@@ -45,10 +33,10 @@ public class JsonFileRecipesRepository : IRecipesRepository
         return Task.FromResult(recipes[id]);
     }
     
-    private void ReadFile()
+    private static Dictionary<Guid, Recipe> ReadFile(string fullPath)
     {
         var text = File.ReadAllText(fullPath);
 
-        recipes = JsonConvert.DeserializeObject<Recipe[]>(text)!.ToDictionary(x => x.Id, y => y);
+        return JsonConvert.DeserializeObject<Recipe[]>(text)!.ToDictionary(x => x.Id, y => y);
     }
 }

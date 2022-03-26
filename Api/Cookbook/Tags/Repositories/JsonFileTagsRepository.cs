@@ -2,46 +2,32 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Cookbook.Common;
 using Newtonsoft.Json;
 
 namespace Cookbook.Tags.Repositories;
 
 public class JsonFileTagsRepository : ITagsRepository
 {
-    private readonly string fullPath;
-    private FileSystemWatcher fileWatcher;
+    private readonly SharedDirectoryWatcher directoryWatcher;
     private List<Tag> tags;
 
-    public JsonFileTagsRepository(string directory, string filename)
+    public JsonFileTagsRepository(SharedDirectoryWatcher directoryWatcher, string filename)
     {
-        directory = directory ?? throw new ArgumentNullException(nameof(directory));
-
-        fullPath = Path.Combine(directory, filename);
-        if (!Directory.Exists(directory))
-            throw new DirectoryNotFoundException(directory);
-        if (!File.Exists(fullPath))
-            throw new FileNotFoundException(filename);
-        
-        fileWatcher = new FileSystemWatcher(directory);
-        fileWatcher.Changed += (_, e) =>
-        {
-            if (e.Name == filename)
-                ReadFile();
-        };
+        this.directoryWatcher = directoryWatcher;
+        directoryWatcher.Subscribe(filename, x => tags = ReadFile(x));
+        tags = ReadFile(Path.Combine(directoryWatcher.Directory, filename));
     }
 
     public Task<ICollection<Tag>> GetAllAsync()
     {
-        if (tags == null)
-            ReadFile();
-
         return Task.FromResult((ICollection<Tag>) tags);
     }
 
-    private void ReadFile()
+    private static List<Tag> ReadFile(string fullPath)
     {
         var text = File.ReadAllText(fullPath);
 
-        tags = JsonConvert.DeserializeObject<List<Tag>>(text);
+        return JsonConvert.DeserializeObject<List<Tag>>(text);
     }
 }

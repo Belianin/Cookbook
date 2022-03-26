@@ -1,4 +1,6 @@
-﻿using Cookbook.Tags.Repositories;
+﻿using Cookbook.Common;
+using Cookbook.Recipes.Repositories;
+using Cookbook.Tags.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -18,12 +20,13 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddSingleton<ITagsRepository>(x =>
-        {
-            return new JsonFileTagsRepository(
-                Configuration["TagsFilePath:Directory"],
-                Configuration["TagsFilePath:FileName"]);
-        });
+        services.AddSingleton(new SharedDirectoryWatcher(Configuration["LocalFilesData:Directory"]));
+        services.AddSingleton<ITagsRepository>(x => new JsonFileTagsRepository(
+            x.GetRequiredService<SharedDirectoryWatcher>(),
+            Configuration["LocalFilesData:FileNames:Tags"]));
+        services.AddSingleton<IRecipesRepository>(x => new JsonFileRecipesRepository(
+            x.GetRequiredService<SharedDirectoryWatcher>(),
+            Configuration["LocalFilesData:FileNames:Recipes"]));
         
         services.AddMvc(x =>
         {
