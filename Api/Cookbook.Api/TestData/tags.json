@@ -3,5 +3,10 @@
     "Category": "country",
     "Id": "korea",
     "Description": "Корея"
+  },
+  {
+    "Category": "taste",
+    "Id": "spicy",
+    "Description": "Острое 🔥"
   }
 ]
