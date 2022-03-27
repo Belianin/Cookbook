@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Cookbook.Api.Controllers.Recipes.Models;
 using Cookbook.Recipes.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,14 +22,14 @@ public class V1RecipesController : ControllerBase
     {
         var result = await recipesRepository.GetAllAsync();
 
-        return Ok(result);
+        return Ok(result.Select(x => RecipeResponse.FromValue(x)).ToArray());
     }
     
-    [HttpGet("id:guid")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> Get([FromRoute] Guid id)
     {
         var result = await recipesRepository.GetByIdAsync(id);
 
-        return Ok(result);
+        return Ok(RecipeResponse.FromValue(result));
     }
 }
