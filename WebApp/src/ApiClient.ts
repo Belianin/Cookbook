@@ -18,3 +18,27 @@ export async function getRecipe(id: string): Promise<Recipe> {
             throw new Error(x.statusText);
         })
 }
+
+export async function register(username: string, password: string): Promise<Response> {
+    return fetch('/v1/users/register', {
+        body: JSON.stringify({username, password}),
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
+export async function login(username: string, password: string): Promise<Response> {
+    return fetch('/v1/users/login', {
+        body: JSON.stringify({username, password}),
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
+export async function getMe(): Promise<Response> {
+    return fetch('/v1/users/me')
+}

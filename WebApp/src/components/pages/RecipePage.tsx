@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react'
-import {Recipe} from "../Types";
+import {Recipe} from "../../Types";
 import {useParams} from "react-router-dom";
-import {getRecipe} from "../ApiClient";
+import {getRecipe} from "../../ApiClient";
+import {Loader} from "../Loader";
 
 export interface RecipeProps {
     recipe: Recipe,
@@ -17,7 +18,7 @@ export interface TagDescription {
 }
 
 
-export const RecipeItem: React.FC = () => {
+export const RecipePage: React.FC = () => {
     const [state, setState] = useState<Recipe | null>(null)
 
     const {id} = useParams();
@@ -31,7 +32,7 @@ export const RecipeItem: React.FC = () => {
     }, [])
 
     if (!state)
-        return <h1>No recipe</h1>
+        return <Loader />
 
     return <article className={"paper content"}>
         <header>

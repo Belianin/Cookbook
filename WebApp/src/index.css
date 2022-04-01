@@ -1,6 +1,8 @@
 body {
     background: #dbdbdb;
     font-family: Consolas, monospace;
+    padding: 0;
+    margin: 0;
 }
 
 .paper {
@@ -8,6 +10,7 @@ body {
     padding: 16px;
     border-radius: 8px;
     box-shadow: 4px 4px 4px gray;
+    margin: 16px;
 }
 
 .content {
@@ -28,4 +31,27 @@ body {
     background: seagreen;
     padding: 8px;
     margin: 8px;
+}
+
+.navbar {
+    background: seagreen;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.navbar .links {
+    list-style-type: none;
+}
+
+.navbar .links li {
+    float: left;
+}
+
+.navbar .links li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
 }

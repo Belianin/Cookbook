@@ -4,12 +4,14 @@ import {Recipe} from "../../Types";
 import {Link} from "react-router-dom";
 
 interface RecipesPageState {
-    recipes: Recipe[] | null
+    recipes: Recipe[] | null,
+    isError: boolean
 }
 
 export const RecipesPage: React.FC = () => {
     const [state, setState] = useState<RecipesPageState>({
-        recipes: null
+        recipes: null,
+        isError: false
     });
 
     const tags = {
@@ -27,13 +29,17 @@ export const RecipesPage: React.FC = () => {
 
     useEffect(() => {
         getRecipes()
-            .then(r => setState({recipes: r}))
+            .then(r => setState(s => {return {...s, recipes: r}}))
+            .catch(r => setState(s => {return {...s, isError: true}}))
     }, [])
+
+    if (state.isError)
+        return <h1>Ошибка загрузки</h1>
 
     if (!state.recipes)
         return <h1>Рецептов нет</h1>
 
-    return <div>
+    return <div className={"paper"}>
         {state.recipes.map((e, i) => <div key={i}><Link to={`/recipes/${e.id}`}>{e.title} — {e.description}</Link></div>)}
     </div>
 }
