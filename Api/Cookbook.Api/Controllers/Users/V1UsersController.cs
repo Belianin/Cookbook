@@ -2,6 +2,7 @@
 using Cookbook.Api.Auth;
 using Cookbook.Api.Controllers.Users.Models;
 using Cookbook.Users;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cookbook.Api.Controllers.Users;
@@ -21,7 +22,12 @@ public class V1UsersController : ControllerBase
     [HttpGet("me")]
     public async Task<IActionResult> GetMe()
     {
-        var userId = sessionStore.Get(HttpContext.Session.Id);
+        if (!HttpContext.Request.Cookies.TryGetValue(AuthConsts.SidCookieName, out var sid))
+        {
+            return Unauthorized();
+        }
+        
+        var userId = sessionStore.Get(sid);
 
         if (userId == null)
             return NotFound();
@@ -62,8 +68,14 @@ public class V1UsersController : ControllerBase
 
         if (user.PasswordHash == PasswordHasher.Hash(request.Password))
         {
-            sessionStore.Set(HttpContext.Session.Id, user.Id);
-            HttpContext.Session.Set("userId", user.Id.ToByteArray());
+            var sid = SidGenerator.GenerateSid();
+            sessionStore.Set(sid, user.Id);
+            HttpContext.Response.Cookies.Append("cookbook.sid", sid, new CookieOptions
+            {
+                HttpOnly = true,
+                IsEssential = true,
+                MaxAge = null
+            });
 
             return Ok(user);
         }

@@ -1,5 +1,8 @@
 ﻿using System;
 using Cookbook.Api.Auth;
+using Cookbook.Api.Auth.Middlewares;
+using Cookbook.Comments;
+using Cookbook.Comments.Repositories;
 using Cookbook.Common;
 using Cookbook.Recipes.Repositories;
 using Cookbook.Tags.Repositories;
@@ -31,22 +34,15 @@ public class Startup
             o.DefaultScheme = AuthConsts.Scheme;
         })
             .AddScheme<AuthenticationSchemeOptions, AuthHandler>(AuthConsts.Scheme, null);
-        services.AddSession(x =>
-        {
-            x.Cookie.Name = "cookbook.sid";
-            x.Cookie.IsEssential = true;
-            x.Cookie.HttpOnly = true;
-            x.IdleTimeout = TimeSpan.FromHours(12);
-        });
 
         services.AddIdentityCore<User>(x =>
         {
 
         });
 
+        services.AddSingleton<ICommentsRepository, InMemoryCommentsRepository>();
         services.AddSingleton<SessionStore>();
         services.AddSingleton<IUsersRepository, InMemoryUsersRepository>();
-        services.AddSingleton<ITicketStore, InMemoryTicketStore>();
         services.AddSingleton(new SharedDirectoryWatcher(Configuration["LocalFilesData:Directory"]));
         services.AddSingleton<ITagsRepository>(x => new JsonFileTagsRepository(
             x.GetRequiredService<SharedDirectoryWatcher>(),
@@ -54,7 +50,8 @@ public class Startup
         services.AddSingleton<IRecipesRepository>(x => new JsonFileRecipesRepository(
             x.GetRequiredService<SharedDirectoryWatcher>(),
             Configuration["LocalFilesData:FileNames:Recipes"]));
-        
+
+        services.AddUserContext();
         services.AddMvc(x =>
         {
             x.EnableEndpointRouting = false;
@@ -74,9 +71,10 @@ public class Startup
             //app.UseHsts();
         }
 
-        app.UseSession();
-        app.UseAuthentication();    // аутентификация
-        app.UseAuthorization();     // авторизация
+        app.UseUserContext();
+
+        //app.UseAuthentication();    // аутентификация
+        //app.UseAuthorization();     // авторизация
         
         //app.UseHttpsRedirection();
         app.UseStaticFiles();
